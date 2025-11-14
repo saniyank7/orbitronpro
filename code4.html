@@ -1,0 +1,365 @@
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbitron Pro v4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <style>
+      body { background:#111827; color:#fff; font-family:'Inter',sans-serif; margin:0; height:100vh; overflow:hidden; }
+      #map-container .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9); }
+      .app-header { z-index:1050; }
+      .status-dot{height:10px;width:10px;border-radius:50%;display:inline-block;margin-right:8px;animation:pulse 2s infinite;}
+      .status-dot.offline{background:#6b7280;}
+      .status-dot.online{background:#22c55e;}
+      @keyframes pulse {0%,100%{opacity:1}50%{opacity:.5}}
+      .panel-width{width:320px;}
+      .sat-label{font-size:18px;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.8),0 0 14px rgba(59,130,246,.6);transform:translate(-50%,-50%);}
+      .sat-label::before{content:"🛰️"; filter:drop-shadow(0 0 6px rgba(59,130,246,.9));}
+      .sat-label.selected{ text-shadow:0 0 10px rgba(255,153,0,.9), 0 0 18px rgba(255,153,0,.7); }
+      .sat-info-card{background:#1f2937;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 0 10px rgba(255,255,255,.05);}
+      .sat-info-card h5{color:#60a5fa;}
+      .dropdown-container{margin-bottom:20px;}
+      .btn-tab{color:#fff;text-decoration:none}
+      .btn-tab.fw-bold { text-decoration:underline; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Core libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/4.1.4/satellite.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- React + Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* -------- Header -------- */
+const Header = ({ page, setPage, dataSource }) => (
+  <header className="position-absolute top-0 start-0 w-100 p-3 app-header">
+    <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex align-items-center">
+        <h1 className="h4 m-0 text-white fw-bold">Orbitron Pro</h1>
+        <div className="d-none d-md-flex align-items-center ms-4">
+          <span className={`status-dot ${dataSource.status}`}></span>
+          <span className="text-white-50 small">{dataSource.label}</span>
+        </div>
+      </div>
+      <nav className="d-none d-md-flex align-items-center">
+        {["home","tracker","map","info"].map(pg=>(
+          <button key={pg} className={`btn btn-link btn-tab ${page===pg?'fw-bold':''}`} onClick={()=>setPage(pg)}>
+            {pg.charAt(0).toUpperCase()+pg.slice(1)}
+          </button>
+        ))}
+      </nav>
+    </div>
+  </header>
+);
+
+/* -------- Pages -------- */
+const HomePage = ({ setPage }) => (
+  <div className="d-flex flex-column align-items-center justify-content-center text-center vh-100 p-4">
+    <h1 className="display-1 fw-bold mb-3">Explore the Cosmos</h1>
+    <p className="lead text-white-50 mb-4" style={{maxWidth:600}}>
+      Real-time 3D orbits, camera-follow, orbit trails, 2D map, and live weather at subpoints for meteorological satellites.
+    </p>
+    <button className="btn btn-primary btn-lg" onClick={()=>setPage('tracker')}>Launch 3D Tracker</button>
+  </div>
+);
+
+const InfoPage = ({ setPage, setSelected, satellites }) => {
+  const [selectedName, setSelectedName] = useState("");
+  const sat = satellites.find(s=>s.name===selectedName);
+  return (
+    <div className="container py-5 mt-5">
+      <div className="text-center mb-4">
+        <h2 className="display-5 fw-bold mb-3">Satellite Information Center</h2>
+        <p className="lead text-white-50">Browse satellite profiles and jump into the 3D tracker.</p>
+      </div>
+      <div className="dropdown-container text-center mb-4">
+        <select className="form-select bg-secondary text-white w-50 mx-auto"
+                onChange={e=>setSelectedName(e.target.value)} value={selectedName}>
+          <option value="">Select a Satellite...</option>
+          {satellites.map(s=><option key={s.name} value={s.name}>{s.name}</option>)}
+        </select>
+      </div>
+      {sat && (
+        <div className="col-lg-8 mx-auto sat-info-card">
+          <h5>{sat.name}</h5>
+          <p><b>Agency:</b> {sat.agency}</p>
+          <p><b>Type:</b> {sat.type}</p>
+          <p><b>Launch Year:</b> {sat.launch}</p>
+          <p><b>Orbit Type:</b> {sat.orbit}</p>
+          <p className="text-white-50"><b>Mission:</b> {sat.purpose}</p>
+          <button className="btn btn-outline-info mt-2"
+                  onClick={()=>{ setSelected(sat.name); setPage('tracker'); }}>
+            View in 3D Tracker
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* -------- 3D Tracker -------- */
+const ThreeScene = ({ satellites, selectedSatellite }) => {
+  const mountRef = useRef(null);
+  useEffect(()=>{
+    const mount = mountRef.current; if(!mount) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, mount.clientWidth/mount.clientHeight, 0.1, 1000);
+    camera.position.set(0,15,25);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    mount.appendChild(renderer.domElement);
+
+    const labelRenderer = new THREE.CSS2DRenderer();
+    labelRenderer.setSize(mount.clientWidth, mount.clientHeight);
+    labelRenderer.domElement.style.position='absolute';
+    labelRenderer.domElement.style.top='0';
+    labelRenderer.domElement.style.pointerEvents='none';
+    mount.appendChild(labelRenderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0x555555));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.3); sun.position.set(10,10,10); scene.add(sun);
+
+    const earthTex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/turban/webgl-earth/master/images/2_no_clouds_4k.jpg');
+    const earth = new THREE.Mesh(new THREE.SphereGeometry(6371/1500,64,64), new THREE.MeshPhongMaterial({ map: earthTex }));
+    scene.add(earth);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.zoomSpeed = 1.5;
+    controls.minDistance = 5;
+    controls.maxDistance = 100;
+    controls.maxPolarAngle = Math.PI;
+    controls.minPolarAngle = 0;
+    controls.enableKeys = false;
+
+    const makeOrbitLine = (satrec,color=0x888888)=>{
+      const pts=[], mm=satrec.no||0.067, T=(2*Math.PI)/mm, N=256;
+      for(let i=0;i<=N;i++){
+        const t=new Date(); t.setMinutes(t.getMinutes()+(i/N)*T);
+        const pv = window.satellite.propagate(satrec,t);
+        if(pv && pv.position){
+          pts.push(new THREE.Vector3(pv.position.x/1500, pv.position.z/1500, -pv.position.y/1500));
+        }
+      }
+      return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color,transparent:true,opacity:0.6}));
+    };
+
+    const entries = satellites.map(s=>{
+      const el=document.createElement('div'); el.className='sat-label';
+      const labelObj=new THREE.CSS2DObject(el); scene.add(labelObj);
+      const orbit = makeOrbitLine(s.satrec); orbit.visible=false; scene.add(orbit);
+      return { name:s.name, satrec:s.satrec, labelObj, orbit };
+    });
+
+    const animate=()=>{
+      requestAnimationFrame(animate);
+      const now=new Date();
+      entries.forEach(e=>{
+        try{
+          const pv = window.satellite.propagate(e.satrec, now);
+          if(pv && pv.position){
+            e.labelObj.position.set(pv.position.x/1500, pv.position.z/1500, -pv.position.y/1500);
+            const sel=(e.name===selectedSatellite);
+            e.orbit.visible=sel;
+            e.labelObj.element.classList.toggle('selected',sel);
+            e.labelObj.element.textContent = sel ? e.name : '';
+          }
+        }catch(err){console.error(err);}
+      });
+      renderer.render(scene,camera);
+      labelRenderer.render(scene,camera);
+    };
+    animate();
+
+    const onResize=()=>{ camera.aspect=mount.clientWidth/mount.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(mount.clientWidth,mount.clientHeight); labelRenderer.setSize(mount.clientWidth,mount.clientHeight);}
+    window.addEventListener('resize', onResize);
+    return ()=>{ window.removeEventListener('resize', onResize); controls.dispose(); if(mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement); if(mount.contains(labelRenderer.domElement)) mount.removeChild(labelRenderer.domElement);}
+  },[satellites, selectedSatellite]);
+  return <div ref={mountRef} style={{width:'100%',height:'100vh',position:'absolute',top:0,left:0}}/>
+};
+
+/* -------- Satellite Info Panel -------- */
+const SatelliteInfoPanel = ({ satellites, selectedSatellite, onSelect }) => {
+  const [params,setParams]=useState(null);
+  const [weather,setWeather]=useState(null);
+
+  useEffect(()=>{
+    if(!selectedSatellite){ setParams(null); setWeather(null); return; }
+    const sat = satellites.find(s=>s.name===selectedSatellite); if(!sat) return;
+
+    let intervalId;
+    const update = async ()=>{
+      try{
+        const now=new Date();
+        const pv = window.satellite.propagate(sat.satrec, now);
+        const gmst = window.satellite.gstime(now);
+        if(pv && pv.position && pv.velocity){
+          const gd = window.satellite.eciToGeodetic(pv.position, gmst);
+          const lat = window.satellite.degreesLat(gd.latitude);
+          const lon = window.satellite.degreesLong(gd.longitude);
+          const vel = Math.sqrt(pv.velocity.x**2 + pv.velocity.y**2 + pv.velocity.z**2);
+          const periodMinutes = sat.satrec.no ? (2 * Math.PI / sat.satrec.no) / (2 * Math.PI / 1440) : null;
+          const periodDisplay = periodMinutes ? `${periodMinutes.toFixed(1)} min` : 'N/A';
+          setParams({
+            altitude: `${(gd.height||0).toFixed(1)} km`,
+            velocity: `${vel.toFixed(1)} km/s`,
+            latitude: `${lat.toFixed(4)}°`,
+            longitude: `${lon.toFixed(4)}°`,
+            period: periodDisplay
+          });
+
+          const upper = sat.name.toUpperCase();
+          const isWeather = ["NOAA","METEOSAT","HIMAWARI","GOES","INSAT"].some(k=>upper.includes(k));
+          if(isWeather){
+            if(!weather || weather.lat!==lat.toFixed(2) || weather.lon!==lon.toFixed(2)){
+              const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&current=temperature_2m,cloud_cover,wind_speed_10m&forecast_days=1`;
+              const res = await fetch(url);
+              const data = await res.json();
+              if(data && data.current) setWeather({ temperature:`${data.current.temperature_2m} °C`, clouds:`${data.current.cloud_cover}%`, wind:`${data.current.wind_speed_10m} m/s`, lat:lat.toFixed(2), lon:lon.toFixed(2)});
+              else setWeather(null);
+            }
+          }else setWeather(null);
+        }
+      }catch(err){console.error(err); setParams(null); setWeather(null);}
+    };
+    update();
+    intervalId=setInterval(update,10000);
+    return ()=>clearInterval(intervalId);
+  },[selectedSatellite, satellites, weather]);
+
+  return (
+    <div className="card bg-dark text-white panel-width">
+      <div className="card-body">
+        <h5 className="card-title">Satellite Explorer</h5>
+        <select className="form-select bg-secondary text-white" onChange={onSelect} value={selectedSatellite||''}>
+          <option value="">Select a Satellite...</option>
+          {satellites.map(s=>{
+            const isWeather = ["NOAA","METEOSAT","HIMAWARI","GOES","INSAT"].some(k=>s.name.toUpperCase().includes(k));
+            return <option key={s.name} value={s.name}>{isWeather?'🌤️ ':''}{s.name}</option>;
+          })}
+        </select>
+        {selectedSatellite && params && (
+          <div className="mt-3 pt-3 border-top border-secondary">
+            <h6 className="fw-bold">{selectedSatellite}</h6>
+            <div className="row g-2 small">
+              <div className="col-6 text-white-50">Altitude</div><div className="col-6 text-end font-monospace">{params.altitude}</div>
+              <div className="col-6 text-white-50">Velocity</div><div className="col-6 text-end font-monospace">{params.velocity}</div>
+              <div className="col-6 text-white-50">Latitude</div><div className="col-6 text-end font-monospace">{params.latitude}</div>
+              <div className="col-6 text-white-50">Longitude</div><div className="col-6 text-end font-monospace">{params.longitude}</div>
+              <div className="col-6 text-white-50">Period</div><div className="col-6 text-end font-monospace">{params.period}</div>
+            </div>
+            {weather && (
+              <div className="mt-3 pt-3 border-top border-secondary small">
+                <h6 className="fw-semibold text-info">Live Weather (Subpoint)</h6>
+                <div className="row g-2">
+                  <div className="col-6 text-white-50">Temp</div><div className="col-6 text-end font-monospace">{weather.temperature}</div>
+                  <div className="col-6 text-white-50">Clouds</div><div className="col-6 text-end font-monospace">{weather.clouds}</div>
+                  <div className="col-6 text-white-50">Wind</div><div className="col-6 text-end font-monospace">{weather.wind}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* -------- Map -------- */
+const MapView = ({ satellites, selectedSatellite }) => {
+  const mapRef = useRef(null);
+  const mapInstance = useRef(null);
+  const marker = useRef(null);
+
+  useEffect(()=>{
+    if(!mapInstance.current){
+      mapInstance.current = L.map(mapRef.current,{zoomControl:false}).setView([20,0],2);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{ attribution:'&copy; CARTO'}).addTo(mapInstance.current);
+    }
+    if(marker.current){ mapInstance.current.removeLayer(marker.current); marker.current=null; }
+
+    let intervalId;
+    if(selectedSatellite){
+      const sat = satellites.find(s=>s.name===selectedSatellite);
+      if(!sat) return;
+      const satIcon = L.divIcon({className:'satellite-map-icon', html:'🛰️', iconSize:[20,20], iconAnchor:[10,10]});
+      const updateMap=()=>{
+        const now=new Date();
+        const pv = window.satellite.propagate(sat.satrec, now);
+        const gmst = window.satellite.gstime(now);
+        if(pv && pv.position){
+          const gd = window.satellite.eciToGeodetic(pv.position, gmst);
+          const lat = window.satellite.degreesLat(gd.latitude);
+          const lon = window.satellite.degreesLong(gd.longitude);
+          if(!marker.current) marker.current=L.marker([lat,lon],{icon:satIcon}).addTo(mapInstance.current);
+          else marker.current.setLatLng([lat,lon]);
+          mapInstance.current.setView([lat,lon]);
+        }
+      };
+      updateMap(); intervalId=setInterval(updateMap,10000);
+    }
+    return ()=>clearInterval(intervalId);
+  },[selectedSatellite, satellites]);
+
+  return <div ref={mapRef} style={{width:'100%',height:'100vh',position:'absolute',top:0,left:0}}/>
+};
+
+/* -------- App -------- */
+const App = () => {
+  const [page,setPage]=useState('home');
+  const [satellites,setSatellites]=useState([]);
+  const [selected,setSelected]=useState(null);
+  const [dataSource,setDataSource]=useState({status:'offline',label:'Offline Fallback'});
+
+  useEffect(()=>{
+    const fetchSats=async ()=>{
+      try{
+        const res = await fetch('http://localhost:5000/api/satellites');
+        const data = await res.json();
+        setSatellites(data.map(s=>({ name:s.name, satrec: window.satellite.twoline2satrec(...s.tle) })));
+        setDataSource({status:'online',label:'MongoDB'});
+      }catch(err){console.error(err);}
+    };
+    fetchSats();
+  },[]);
+
+  return (
+    <div>
+      <Header page={page} setPage={setPage} dataSource={dataSource}/>
+      {(page==='tracker'||page==='map') && (
+        <div className="position-absolute top-0 end-0 p-3 mt-5" style={{zIndex:1060}}>
+          <SatelliteInfoPanel satellites={satellites} selectedSatellite={selected} onSelect={e=>setSelected(e.target.value||null)}/>
+        </div>
+      )}
+      <main>
+        {page==='home' ? <HomePage setPage={setPage}/> :
+         page==='tracker' ? <ThreeScene satellites={satellites} selectedSatellite={selected}/> :
+         page==='map' ? <MapView satellites={satellites} selectedSatellite={selected}/> :
+         <InfoPage setPage={setPage} setSelected={setSelected} satellites={satellites}/>}
+      </main>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>

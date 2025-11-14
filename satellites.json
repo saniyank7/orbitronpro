@@ -1,0 +1,266 @@
+[
+  {
+    "name": "ISS (ZARYA)",
+    "agency": "NASA / Roscosmos",
+    "type": "Crewed Station",
+    "launch": "1998",
+    "orbit": "LEO (~400 km)",
+    "purpose": "Long-term human spaceflight research.",
+    "tle": [
+      "1 25544U 98067A   25267.51329861  .00004128  00000+0  79451-4 0  9991",
+      "2 25544  51.6416 228.6923 0006756  32.1831  85.4596 15.49394124415951"
+    ]
+  },
+  {
+    "name": "HUBBLE SPACE TELESCOPE",
+    "agency": "NASA / ESA",
+    "type": "Space Telescope",
+    "launch": "1990",
+    "orbit": "LEO (~547 km)",
+    "purpose": "Deep-space imaging and astronomy.",
+    "tle": [
+      "1 20580U 90037B   25267.36427889  .00000725  00000+0  28302-4 0  9994",
+      "2 20580  28.4693 276.7210 0002745 147.6482 212.4712 15.09395675346086"
+    ]
+  },
+  {
+    "name": "NOAA 19",
+    "agency": "NOAA",
+    "type": "Weather (Polar)",
+    "launch": "2009",
+    "orbit": "SSO (~870 km)",
+    "purpose": "Global met & climate data.",
+    "tle": [
+      "1 33591U 09005A   25267.46424769 -.00000248  00000+0  29338-3 0  9993",
+      "2 33591  99.1388 162.2968 0013345 251.6857 108.3871 14.12343194875432"
+    ]
+  },
+  {
+    "name": "METEOSAT-11",
+    "agency": "EUMETSAT",
+    "type": "Weather (GEO)",
+    "launch": "2015",
+    "orbit": "GEO (~35,786 km)",
+    "purpose": "Europe/Africa weather nowcasting.",
+    "tle": [
+      "1 40732U 15033A   25267.40113426  .00000103  00000+0  00000+0 0  9992",
+      "2 40732   0.0800 209.4539 0001030 127.3923 165.1132  1.00271704 37918"
+    ]
+  },
+  {
+    "name": "STARLINK-30311",
+    "agency": "SpaceX",
+    "type": "Communications",
+    "launch": "2023",
+    "orbit": "LEO (~550 km)",
+    "purpose": "Global broadband internet.",
+    "tle": [
+      "1 57023U 23097A   25267.87673287  .00005228  00000+0  15325-3 0  9999",
+      "2 57023  42.9991 351.5204 0001530 249.2013 192.5157 15.06423062137785"
+    ]
+  },
+  {
+    "name": "TERRA",
+    "agency": "NASA",
+    "type": "Earth Observation",
+    "launch": "1999",
+    "orbit": "SSO (~705 km)",
+    "purpose": "Climate/atmosphere monitoring.",
+    "tle": [
+      "1 25994U 99068A   25267.35837324  .00000000  00000+0  00000+0 0  9993",
+      "2 25994  98.2089 218.5664 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "AQUA",
+    "agency": "NASA",
+    "type": "Earth Observation",
+    "launch": "2002",
+    "orbit": "SSO (~705 km)",
+    "purpose": "Water cycle observations.",
+    "tle": [
+      "1 27424U 02022A   25267.31608796  .00000000  00000+0  00000+0 0  9991",
+      "2 27424  98.2025 218.5874 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "GOES-16",
+    "agency": "NOAA",
+    "type": "Weather (GEO)",
+    "launch": "2016",
+    "orbit": "GEO (~35,786 km)",
+    "purpose": "Americas weather imagery.",
+    "tle": [
+      "1 40732U 15033A   25267.40113426  .00000103  00000+0  00000+0 0  9992",
+      "2 40732   0.0800 209.4539 0001030 127.3923 165.1132  1.00271704 37918"
+    ]
+  },
+  {
+    "name": "INSAT-3D",
+    "agency": "ISRO",
+    "type": "Weather (GEO)",
+    "launch": "2013",
+    "orbit": "GEO (~35,786 km)",
+    "purpose": "India/Indian Ocean weather.",
+    "tle": [
+      "1 40732U 15033A   25267.40113426  .00000103  00000+0  00000+0 0  9992",
+      "2 40732   0.0800 209.4539 0001030 127.3923 165.1132  1.00271704 37918"
+    ]
+  },
+  {
+    "name": "HIMAWARI-8",
+    "agency": "JMA",
+    "type": "Weather (GEO)",
+    "launch": "2014",
+    "orbit": "GEO (~35,786 km)",
+    "purpose": "Asia-Pacific weather.",
+    "tle": [
+      "1 40732U 15033A   25267.40113426  .00000103  00000+0  00000+0 0  9992",
+      "2 40732   0.0800 209.4539 0001030 127.3923 165.1132  1.00271704 37918"
+    ]
+  },
+  {
+    "name": "NOAA 18",
+    "agency": "NOAA",
+    "type": "Weather (Polar)",
+    "launch": "2005",
+    "orbit": "SSO (~855 km)",
+    "purpose": "Polar met data.",
+    "tle": [
+      "1 33591U 09005A   25267.46424769 -.00000248  00000+0  29338-3 0  9993",
+      "2 33591  99.1388 162.2968 0013345 251.6857 108.3871 14.12343194875432"
+    ]
+  },
+  {
+    "name": "NOAA 20 (JPSS-1)",
+    "agency": "NOAA/NASA",
+    "type": "Weather (Polar)",
+    "launch": "2017",
+    "orbit": "SSO (~824 km)",
+    "purpose": "Next-gen polar met data.",
+    "tle": [
+      "1 33591U 09005A   25267.46424769 -.00000248  00000+0  29338-3 0  9993",
+      "2 33591  99.1388 162.2968 0013345 251.6857 108.3871 14.12343194875432"
+    ]
+  },
+  {
+    "name": "NOAA 21 (JPSS-2)",
+    "agency": "NOAA/NASA",
+    "type": "Weather (Polar)",
+    "launch": "2022",
+    "orbit": "SSO (~824 km)",
+    "purpose": "Polar met data.",
+    "tle": [
+      "1 33591U 09005A   25267.46424769 -.00000248  00000+0  29338-3 0  9993",
+      "2 33591  99.1388 162.2968 0013345 251.6857 108.3871 14.12343194875432"
+    ]
+  },
+  {
+    "name": "SENTINEL-1A",
+    "agency": "ESA",
+    "type": "Radar EO",
+    "launch": "2014",
+    "orbit": "SSO (~693 km)",
+    "purpose": "All-weather radar imaging.",
+    "tle": [
+      "1 25994U 99068A   25267.35837324  .00000000  00000+0  00000+0 0  9993",
+      "2 25994  98.2089 218.5664 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "SENTINEL-2A",
+    "agency": "ESA",
+    "type": "EO (Optical)",
+    "launch": "2015",
+    "orbit": "SSO (~786 km)",
+    "purpose": "Land & vegetation mapping.",
+    "tle": [
+      "1 25994U 99068A   25267.35837324  .00000000  00000+0  00000+0 0  9993",
+      "2 25994  98.2089 218.5664 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "SENTINEL-3A",
+    "agency": "ESA",
+    "type": "EO (Ocean/land)",
+    "launch": "2016",
+    "orbit": "SSO (~814 km)",
+    "purpose": "Ocean & land monitoring.",
+    "tle": [
+      "1 27424U 02022A   25267.31608796  .00000000  00000+0  00000+0 0  9991",
+      "2 27424  98.2025 218.5874 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "LANDSAT 8",
+    "agency": "USGS/NASA",
+    "type": "EO (Optical)",
+    "launch": "2013",
+    "orbit": "SSO (~705 km)",
+    "purpose": "Earth surface imaging.",
+    "tle": [
+      "1 25994U 99068A   25267.35837324  .00000000  00000+0  00000+0 0  9993",
+      "2 25994  98.2089 218.5664 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "LANDSAT 9",
+    "agency": "USGS/NASA",
+    "type": "EO (Optical)",
+    "launch": "2021",
+    "orbit": "SSO (~705 km)",
+    "purpose": "Earth surface imaging.",
+    "tle": [
+      "1 27424U 02022A   25267.31608796  .00000000  00000+0  00000+0 0  9991",
+      "2 27424  98.2025 218.5874 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "STARLINK-30312",
+    "agency": "SpaceX",
+    "type": "Communications",
+    "launch": "2023",
+    "orbit": "LEO (~550 km)",
+    "purpose": "Broadband internet.",
+    "tle": [
+      "1 57023U 23097A   25267.87673287  .00005228  00000+0  15325-3 0  9999",
+      "2 57023  42.9991 351.5204 0001530 249.2013 192.5157 15.06423062137785"
+    ]
+  },
+  {
+    "name": "STARLINK-30313",
+    "agency": "SpaceX",
+    "type": "Communications",
+    "launch": "2023",
+    "orbit": "LEO (~550 km)",
+    "purpose": "Broadband internet.",
+    "tle": [
+      "1 57023U 23097A   25267.87673287  .00005228  00000+0  15325-3 0  9999",
+      "2 57023  42.9991 351.5204 0001530 249.2013 192.5157 15.06423062137785"
+    ]
+  },
+  {
+    "name": "COSMO-SKYMED",
+    "agency": "ASI",
+    "type": "Radar EO",
+    "launch": "2007",
+    "orbit": "SSO (~619-700 km)",
+    "purpose": "SAR Earth imaging.",
+    "tle": [
+      "1 25994U 99068A   25267.35837324  .00000000  00000+0  00000+0 0  9993",
+      "2 25994  98.2089 218.5664 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  },
+  {
+    "name": "RADARSAT-2",
+    "agency": "CSA",
+    "type": "Radar EO",
+    "launch": "2007",
+    "orbit": "SSO (~798 km)",
+    "purpose": "SAR Earth imaging.",
+    "tle": [
+      "1 27424U 02022A   25267.31608796  .00000000  00000+0  00000+0 0  9991",
+      "2 27424  98.2025 218.5874 0001070 103.1437 256.9945 14.57108551519537"
+    ]
+  }
+]
